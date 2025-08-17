@@ -1,6 +1,7 @@
 import express from "express";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
+import userRouter from "./routes/user.routes.js";
 // import path from "path";
 // import { fileURLToPath } from "url";
 
@@ -29,3 +30,5 @@ const app = express();
 app.listen(PORT, () => {
   console.log("Server is running on port " + PORT + "!!");
 });
+
+app.use("/api/user",userRouter);
