@@ -1,10 +1,13 @@
 import React, { useState } from 'react'
-import { Link,useNavigate } from 'react-router-dom';
+import { Link,useNavigate } from 'react-router-dom'
+import { useDispatch, useSelector } from 'react-redux';
+import { signInStart,signInSuccess,signInFailure } from '../redux/user/userSlice.js';
+
 export default function Signin() {
   const [formData, setFormData] = useState({});
-  const [errorMessage, setErrorMessage] = useState(null);
-  const [loading, setLoading] = useState(null);
+ const {loading,error}  = useSelector((state)=>state.user);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const handleChange = (e)=>{
       setFormData({
         ...formData,
@@ -18,7 +21,8 @@ export default function Signin() {
     // console.log("formdata = ",formData);
 
     try{
-        setLoading(true);
+        // setLoading(true);
+        dispatch(signInStart());
 
         const res = await fetch("api/auth/signin",{
           method:"POST",
@@ -34,19 +38,22 @@ export default function Signin() {
         // console.log("data = ",data);
 
         if(data.success ===false){
-            setErrorMessage(data.message);
-            setLoading(false);
+            // setErrorMessage(data.message);
+            // setLoading(false);
+            dispatch(signInFailure(data.message));
             return;
         }
         // console.log(data);
-        setLoading(false);
+        // setLoading(false);
         // setErrorMessage(null);
+        dispatch(signInSuccess(data));
         navigate("/");
 
 
     }catch(error){
-      setLoading(false);
-      setErrorMessage(error.message);
+      // setLoading(false);
+      // setErrorMessage(error.message);
+      dispatch(signInFailure(error.message));
     }
     
   }
@@ -67,7 +74,7 @@ export default function Signin() {
           <span className='text-blue-700 font-semibold hover:underline'>Sign Up</span>
         </Link>
       </div>
-      {errorMessage && <p className='text-red-500 mt-5'>{errorMessage}</p>}
+      {error && <p className='text-red-500 mt-5'>{error}</p>}
     </div>
   )
 }
