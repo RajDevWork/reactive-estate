@@ -1,13 +1,110 @@
 import { useSelector } from 'react-redux';
+import { useEffect, useRef, useState } from 'react';
+
+// import { Cloudinary } from '@cloudinary/url-gen';
+// import { auto } from '@cloudinary/url-gen/actions/resize';
+// import { autoGravity } from '@cloudinary/url-gen/qualifiers/gravity';
+// import { AdvancedImage } from '@cloudinary/react';
+
+
+
 export default function Profile() {
   const {currentUser} = useSelector(state=>state.user)
+  const fileref = useRef(null);
+  const [Uploadedfile, setFile] = useState(undefined);
+  const [progress, setProgress] = useState(0);
+  const [fileUploadError, setFileuploadedError] = useState(false);
+  const [myFormData, setFormData] = useState({});
+  // const cld = new Cloudinary({ cloud: { cloudName: 'dj4qovax8' } });
+// console.log("Upload progress: ",progress);
+// console.log("fileUploadError: ",fileUploadError);
+console.log("FormData: ",myFormData);
+  useEffect(()=>{
+      if(Uploadedfile){
+        handleFileUpload(Uploadedfile);
+      }
+  },[Uploadedfile]);
+
+
+ const handleFileUpload = async (Uploadedfile)=>{
+
+    console.log(Uploadedfile);
+
+    const data = new FormData();
+    data.append("file", Uploadedfile);
+    data.append("upload_preset", import.meta.env.VITE_UPLOAD_PRESET); // Cloudinary dashboard se
+
+    const cloud_name = import.meta.env.VITE_CLOUD_NAME;
+    const xhr = new XMLHttpRequest();
+    xhr.open("POST", "https://api.cloudinary.com/v1_1/"+cloud_name+"/image/upload");
+
+    xhr.upload.addEventListener("progress", (e) => {
+      if (e.lengthComputable) {
+        setProgress(Math.round((e.loaded * 100) / e.total));
+      }
+    });
+
+    xhr.onload = () => {
+      if (xhr.status === 200) {
+        const res = JSON.parse(xhr.responseText);
+        setFormData({...FormData,avatar:res.secure_url});//setting up uploaded image url
+        console.log("Uploaded URL:", res.secure_url);
+      }else{
+        setFileuploadedError(true);
+      }
+    };
+
+    xhr.send(data);
+
+
+
+
+
+
+
+  // try {
+  //   const res = await fetch(
+  //     "https://api.cloudinary.com/v1_1/dj4qovax8/image/upload",
+  //     {
+  //       method: "POST",
+  //       body: data,
+  //     }
+  //   );
+
+  //   const uploadedImage = await res.json();
+  //   console.log("Uploaded Image URL:", uploadedImage.secure_url);
+
+  //   // ✅ Ab aap yeh URL ko DB me save kar sakte ho
+  //   // jaise update user profile
+  // } catch (err) {
+  //   console.error(err);
+  // }
+
+
+ }
+
+
   return (
     <div className='p-3 max-w-lg mx-auto'>
       <h1 className='text-3xl font-semibold text-center my-3'>Profile</h1>
       <form className='flex flex-col gap-4'>
-        <img src={currentUser.avatar} alt="Profile" className='rounded-full w-24 h-24 object-cover cursor-pointer self-center mt-2' />
-        <input type="text" name="username" id="username" placeholder='username' className='border p-3 rounded-lg'/>
-        <input type="email" name="email" id="email" placeholder='email' className='border p-3 rounded-lg'/>
+        <input onChange={(e)=>setFile(e.target.files[0])} type="file" ref={fileref} hidden accept='image/*'/>
+        <img onClick={()=>fileref.current.click()} src={myFormData.avatar || currentUser.avatar} alt="Profile" className='rounded-full w-24 h-24 object-cover cursor-pointer self-center mt-2' />
+        <p className='text-sm self-center'>
+          {fileUploadError 
+          ? 
+          (<span className='text-red-700'>Image upload Error</span>)
+          :
+          progress > 0 && progress < 100 
+            ? (<span className='text-slate-700'>Image uploading {progress}%</span>)
+          :
+          progress==100 ? (<span className='text-green-700'>Image Uploaded Successfully!</span>) : ''
+          
+          }
+        </p>
+
+        <input type="text" name="username" defaultValue={currentUser.username} id="username" placeholder='username' className='border p-3 rounded-lg'/>
+        <input type="email" name="email" defaultValue={currentUser.email} id="email" placeholder='email' className='border p-3 rounded-lg'/>
         <input type="password" name="password" id="password" placeholder='password' className='border p-3 rounded-lg'/>
         <button className='uppercase bg-slate-700 text-white p-3 rounded-lg hover:opacity-95 disabled:opacity-80'>UPdate</button>
       </form>
