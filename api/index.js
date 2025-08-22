@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 import dotenv from "dotenv";
 import userRouter from "./routes/user.routes.js";
 import authRouter from "./routes/auth.routes.js";
+import listingRouter from "./routes/listing.routes.js";
 import cookieParser from "cookie-parser";
 // import path from "path";
 // import { fileURLToPath } from "url";
@@ -37,6 +38,7 @@ app.listen(PORT, () => {
 
 app.use("/api/user",userRouter);
 app.use("/api/auth",authRouter);
+app.use("/api/listing",listingRouter);
 
 
 //Middleware
