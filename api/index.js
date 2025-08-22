@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 import dotenv from "dotenv";
 import userRouter from "./routes/user.routes.js";
 import authRouter from "./routes/auth.routes.js";
+import cookieParser from "cookie-parser";
 // import path from "path";
 // import { fileURLToPath } from "url";
 
@@ -28,6 +29,7 @@ mongoose
 
 const app = express();
 app.use(express.json()); //request me json accept karne ke liye iska use karte hain.
+app.use(cookieParser());
 
 app.listen(PORT, () => {
   console.log("Server is running on port " + PORT + "!!");
