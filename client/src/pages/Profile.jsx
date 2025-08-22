@@ -1,6 +1,7 @@
 import { useSelector } from 'react-redux';
 import { useEffect, useRef, useState } from 'react';
-
+import { useDispatch } from 'react-redux';
+import { updateUserFailure, updateUserStart, updateUserSuccess } from '../redux/user/userSlice.js';
 // import { Cloudinary } from '@cloudinary/url-gen';
 // import { auto } from '@cloudinary/url-gen/actions/resize';
 // import { autoGravity } from '@cloudinary/url-gen/qualifiers/gravity';
@@ -9,16 +10,18 @@ import { useEffect, useRef, useState } from 'react';
 
 
 export default function Profile() {
-  const {currentUser} = useSelector(state=>state.user)
+  const {currentUser,loading,error} = useSelector(state=>state.user)
   const fileref = useRef(null);
   const [Uploadedfile, setFile] = useState(undefined);
   const [progress, setProgress] = useState(0);
   const [fileUploadError, setFileuploadedError] = useState(false);
   const [myFormData, setFormData] = useState({});
+  const [updateSuccess, setUpdateSuccess] = useState(false);
+  const dispatch = useDispatch();
   // const cld = new Cloudinary({ cloud: { cloudName: 'dj4qovax8' } });
 // console.log("Upload progress: ",progress);
 // console.log("fileUploadError: ",fileUploadError);
-console.log("FormData: ",myFormData);
+// console.log("FormData: ",myFormData);
   useEffect(()=>{
       if(Uploadedfile){
         handleFileUpload(Uploadedfile);
@@ -48,7 +51,7 @@ console.log("FormData: ",myFormData);
       if (xhr.status === 200) {
         const res = JSON.parse(xhr.responseText);
         setFormData({...FormData,avatar:res.secure_url});//setting up uploaded image url
-        console.log("Uploaded URL:", res.secure_url);
+        // console.log("Uploaded URL:", res.secure_url);
       }else{
         setFileuploadedError(true);
       }
@@ -82,14 +85,47 @@ console.log("FormData: ",myFormData);
 
 
  }
+ const handleChange = (e)=>{
+    setFormData({...myFormData,[e.target.id]:e.target.value});
+ }
 
+ const handleSubmit = async (e)=>{
+  e.preventDefault();
+
+  try {
+      dispatch(updateUserStart());
+
+
+      const res = await fetch(`/api/user/update/${currentUser._id}`,{
+        method:'POST',
+        headers:{
+          'content-type':'application/json'
+        },
+        body:JSON.stringify(myFormData)
+      });
+      const data = await res.json();
+      if(data ===false){
+          dispatch(updateUserFailure(data.message));
+          return;
+      }
+      dispatch(updateUserSuccess(data));
+      setUpdateSuccess(true);
+
+  } catch (error) {
+    dispatch(updateUserFailure(error.message));
+  }
+
+
+
+ }
+//  console.log("error",error);
 
   return (
     <div className='p-3 max-w-lg mx-auto'>
       <h1 className='text-3xl font-semibold text-center my-3'>Profile</h1>
-      <form className='flex flex-col gap-4'>
+      <form onSubmit={handleSubmit} className='flex flex-col gap-4'>
         <input onChange={(e)=>setFile(e.target.files[0])} type="file" ref={fileref} hidden accept='image/*'/>
-        <img onClick={()=>fileref.current.click()} src={myFormData.avatar || currentUser.avatar} alt="Profile" className='rounded-full w-24 h-24 object-cover cursor-pointer self-center mt-2' />
+        <img onClick={()=>fileref.current.click()} src={myFormData?.avatar || currentUser.avatar} alt="Profile" className='rounded-full w-24 h-24 object-cover cursor-pointer self-center mt-2' />
         <p className='text-sm self-center'>
           {fileUploadError 
           ? 
@@ -103,15 +139,17 @@ console.log("FormData: ",myFormData);
           }
         </p>
 
-        <input type="text" name="username" defaultValue={currentUser.username} id="username" placeholder='username' className='border p-3 rounded-lg'/>
-        <input type="email" name="email" defaultValue={currentUser.email} id="email" placeholder='email' className='border p-3 rounded-lg'/>
-        <input type="password" name="password" id="password" placeholder='password' className='border p-3 rounded-lg'/>
-        <button className='uppercase bg-slate-700 text-white p-3 rounded-lg hover:opacity-95 disabled:opacity-80'>UPdate</button>
+        <input type="text" name="username" defaultValue={currentUser.username} id="username" placeholder='username' className='border p-3 rounded-lg' onChange={handleChange}/>
+        <input type="email" name="email" defaultValue={currentUser.email} id="email" placeholder='email' className='border p-3 rounded-lg' onChange={handleChange}/>
+        <input type="password" name="password" id="password" placeholder='password' className='border p-3 rounded-lg' onChange={handleChange}/>
+        <button disabled={loading} className='uppercase bg-slate-700 text-white p-3 rounded-lg hover:opacity-95 disabled:opacity-80'>{loading?'Loading..':'update'}</button>
       </form>
       <div className='flex justify-between mt-5'>
         <span className='text-red-700 cursor-pointer'>Delete account</span>
         <span className='text-red-700 cursor-pointer'>Sign Out</span>
       </div>
+      <p className='text-red-700 mt-5 self-center text-center'>{error ? currentUser?.message : currentUser?.message }</p>
+      <p className='text-green-700 mt-5 self-center text-center'>{updateSuccess ? 'User updated Successfully' : '' }</p>
     </div>
   )
 }
