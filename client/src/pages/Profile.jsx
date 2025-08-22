@@ -1,7 +1,7 @@
 import { useSelector } from 'react-redux';
 import { useEffect, useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { updateUserFailure, updateUserStart, updateUserSuccess,deleteUserStart,deleteUserSuccess,deleteUserFailure } from '../redux/user/userSlice.js';
+import { updateUserFailure, updateUserStart, updateUserSuccess,deleteUserStart,deleteUserSuccess,deleteUserFailure,signoutUserStart,signoutUserSuccess,signoutUserFailure } from '../redux/user/userSlice.js';
 // import { Cloudinary } from '@cloudinary/url-gen';
 // import { auto } from '@cloudinary/url-gen/actions/resize';
 // import { autoGravity } from '@cloudinary/url-gen/qualifiers/gravity';
@@ -140,6 +140,24 @@ const handleDeleteUser = async()=>{
 
 }
 
+const handleLogout = async ()=>{
+
+    try {
+      dispatch(signoutUserStart())
+      const res = await fetch("/api/auth/signout")
+      const data = await res.json();
+      if(data === false){
+        dispatch(signoutUserFailure(data));
+        return;
+      }
+      dispatch(signoutUserSuccess(data));
+      
+    } catch (error) {
+      dispatch(signoutUserFailure(error.message));
+    }
+
+}
+
   return (
     <div className='p-3 max-w-lg mx-auto'>
       <h1 className='text-3xl font-semibold text-center my-3'>Profile</h1>
@@ -166,7 +184,7 @@ const handleDeleteUser = async()=>{
       </form>
       <div className='flex justify-between mt-5'>
         <span onClick={handleDeleteUser} className='text-red-700 cursor-pointer'>Delete account</span>
-        <span className='text-red-700 cursor-pointer'>Sign Out</span>
+        <span onClick={handleLogout} className='text-red-700 cursor-pointer'>Sign Out</span>
       </div>
       <p className='text-red-700 mt-5 self-center text-center'>{error ? currentUser?.message : currentUser?.message }</p>
       <p className='text-green-700 mt-5 self-center text-center'>{updateSuccess ? 'User updated Successfully' : '' }</p>
