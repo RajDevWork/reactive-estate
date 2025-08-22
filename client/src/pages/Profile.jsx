@@ -1,7 +1,7 @@
 import { useSelector } from 'react-redux';
 import { useEffect, useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { updateUserFailure, updateUserStart, updateUserSuccess } from '../redux/user/userSlice.js';
+import { updateUserFailure, updateUserStart, updateUserSuccess,deleteUserStart,deleteUserSuccess,deleteUserFailure } from '../redux/user/userSlice.js';
 // import { Cloudinary } from '@cloudinary/url-gen';
 // import { auto } from '@cloudinary/url-gen/actions/resize';
 // import { autoGravity } from '@cloudinary/url-gen/qualifiers/gravity';
@@ -120,6 +120,26 @@ export default function Profile() {
  }
 //  console.log("error",error);
 
+
+const handleDeleteUser = async()=>{
+
+  try {
+      dispatch(deleteUserStart());
+      const res = await fetch(`/api/user/delete/${currentUser._id}`,{method:'DELETE',});
+      const data = await res.json();
+      if(data===false){
+        dispatch(deleteUserFailure(data.message));
+        return
+      }
+
+      dispatch(deleteUserSuccess(data));
+    
+  } catch (error) {
+    dispatch(deleteUserFailure(error.message));
+  }
+
+}
+
   return (
     <div className='p-3 max-w-lg mx-auto'>
       <h1 className='text-3xl font-semibold text-center my-3'>Profile</h1>
@@ -145,7 +165,7 @@ export default function Profile() {
         <button disabled={loading} className='uppercase bg-slate-700 text-white p-3 rounded-lg hover:opacity-95 disabled:opacity-80'>{loading?'Loading..':'update'}</button>
       </form>
       <div className='flex justify-between mt-5'>
-        <span className='text-red-700 cursor-pointer'>Delete account</span>
+        <span onClick={handleDeleteUser} className='text-red-700 cursor-pointer'>Delete account</span>
         <span className='text-red-700 cursor-pointer'>Sign Out</span>
       </div>
       <p className='text-red-700 mt-5 self-center text-center'>{error ? currentUser?.message : currentUser?.message }</p>
