@@ -253,7 +253,7 @@ const handleDeleteListing = async(listid) =>{
         (
           
           userListins.map((list)=>{
-            return <div key={list._id} className='border border-gray-300 p-3 rounnded-lg flex justify-between items-center my-2 gap-4'>
+            return <div key={list._id} className='border border-gray-300 p-3 rounnded-lg flex justify-between items-center my-2 gap-4 rounded-lg'>
                 <Link to={`/listing/${list._id}`}>
                   <img src={list.imageUrls[0]} alt="listing" className='w-16 h-16 object-contain'/>
                 </Link>
