@@ -19,6 +19,10 @@ export default function Profile() {
   const [fileUploadError, setFileuploadedError] = useState(false);
   const [myFormData, setFormData] = useState({});
   const [updateSuccess, setUpdateSuccess] = useState(false);
+
+  const [showListingError, setListingError] = useState(false);
+  const [userListins, setUserListings] = useState([]);
+
   const dispatch = useDispatch();
   // const cld = new Cloudinary({ cloud: { cloudName: 'dj4qovax8' } });
 // console.log("Upload progress: ",progress);
@@ -160,6 +164,23 @@ const handleLogout = async ()=>{
 
 }
 
+const handleShowListing = async() =>{
+
+  try {
+    setListingError(false);
+      const res = await fetch(`/api/user/listing/${currentUser._id}`)
+      const data = await res.json();
+      if(data.success ===false){
+        setListingError(data.message);
+        return;
+      }
+      setUserListings(data);
+
+  } catch (error) {
+      setListingError(error.message);
+  }
+}
+
   return (
     <div className='p-3 max-w-lg mx-auto'>
       <h1 className='text-3xl font-semibold text-center my-3'>Profile</h1>
@@ -193,6 +214,44 @@ const handleLogout = async ()=>{
       </div>
       <p className='text-red-700 mt-5 self-center text-center'>{error ? currentUser?.message : currentUser?.message }</p>
       <p className='text-green-700 mt-5 self-center text-center'>{updateSuccess ? 'User updated Successfully' : '' }</p>
+
+      <button onClick={handleShowListing} className='text-green-700 w-full'>Show Listing</button>
+      <p className='text-red-700 text-center mt-5'>
+        {showListingError? showListingError:''}
+      </p>
+
+      {
+        userListins && userListins.length > 0 
+        ? <h1 className='text-2xl font-semibold text-center my-7'>Your Listings</h1>
+        :null
+      }
+
+      {
+        userListins && userListins.length > 0 
+        ?
+        (
+          
+          userListins.map((list)=>{
+            return <div key={list._id} className='border border-gray-300 p-3 rounnded-lg flex justify-between items-center my-2 gap-4'>
+                <Link to={`/listing/${list._id}`}>
+                  <img src={list.imageUrls[0]} alt="listing" className='w-16 h-16 object-contain'/>
+                </Link>
+                <Link className='text-slate-700 font-semibold flex-1 hover:underline truncate' to={`/listing/${list._id}`}>
+                <p >{list.name}</p>
+                </Link>
+                <div className='flex flex-col'>
+                  <button className='text-red-700 hover:underline uppercase cursor-pointer'>Delete</button>
+                  <button className='text-green-700 hover:underline uppercase cursor-pointer'>Edit</button>
+                </div>
+
+            </div>
+
+          })
+        )
+        :null
+      }
+
+
     </div>
   )
 }
