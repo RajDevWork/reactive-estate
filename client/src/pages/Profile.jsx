@@ -2,6 +2,8 @@ import { useSelector } from 'react-redux';
 import { useEffect, useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { updateUserFailure, updateUserStart, updateUserSuccess,deleteUserStart,deleteUserSuccess,deleteUserFailure,signoutUserStart,signoutUserSuccess,signoutUserFailure } from '../redux/user/userSlice.js';
+// import {Link} from 'react-dom';
+import {Link} from 'react-router-dom';
 // import { Cloudinary } from '@cloudinary/url-gen';
 // import { auto } from '@cloudinary/url-gen/actions/resize';
 // import { autoGravity } from '@cloudinary/url-gen/qualifiers/gravity';
@@ -181,6 +183,9 @@ const handleLogout = async ()=>{
         <input type="email" name="email" defaultValue={currentUser.email} id="email" placeholder='email' className='border p-3 rounded-lg' onChange={handleChange}/>
         <input type="password" name="password" id="password" placeholder='password' className='border p-3 rounded-lg' onChange={handleChange}/>
         <button disabled={loading} className='uppercase bg-slate-700 text-white p-3 rounded-lg hover:opacity-95 disabled:opacity-80'>{loading?'Loading..':'update'}</button>
+        <Link className="bg-green-700 text-white p-3 rounded-lg text-center uppercase hover:opacity-95 disabled:opacity-80" to={"/create-listing"}>
+          Create Listing
+        </Link>
       </form>
       <div className='flex justify-between mt-5'>
         <span onClick={handleDeleteUser} className='text-red-700 cursor-pointer'>Delete account</span>
