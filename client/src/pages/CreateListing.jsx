@@ -1,4 +1,91 @@
+import { useState } from "react"
+
 export default function CreateListing() {
+
+  const [files, setFiles] = useState([]);
+  const [imageUploadError, setImageUploadError] = useState(false);
+  const [loadingProgress, setLoadingProgress] = useState(false);
+  console.log("files = ",files);
+
+  const [formData, setFormData] = useState({
+  imageUrls: [],
+});
+
+console.log("formData = ",formData);
+
+const handleFileUpload = async () => {
+  if (files.length > 0 && files.length + formData.imageUrls.length < 7) {
+    setLoadingProgress(true);
+    setImageUploadError(false);
+
+     // check karenge ki sabhi files ka type "image/*" ho
+    const isAllImages = files.every((file) => file.type.startsWith("image/"));
+
+    if (!isAllImages) {
+      setLoadingProgress(false);
+      setImageUploadError("❌ Only image files are allowed!");
+      return; // stop upload
+    }
+
+
+
+
+
+    try {
+      // Sabhi upload ke promises collect
+      const promises = files.map((file) => StoreImage(file));
+
+      // Parallel upload
+      const urls = await Promise.all(promises);
+
+      console.log("All uploaded image URLs:", urls);
+
+      // ✅ State update karna (pehle ke images bhi preserve karna ho toh spread karo)
+      setFormData((prev) => ({
+        ...prev,
+        imageUrls: [...prev.imageUrls, ...urls],
+      }));
+      setImageUploadError(false);
+      setLoadingProgress(false);
+    } catch (error) {
+      setImageUploadError("Error uploading files:", error);
+      setLoadingProgress(false);
+      console.error("Error uploading files:", error);
+    }
+  }else{
+    setImageUploadError('You can only upload 6 images!');
+  }
+};
+
+const StoreImage = async (Uploadedfile) => {
+  const data = new FormData();
+  data.append("file", Uploadedfile);
+  data.append("upload_preset", import.meta.env.VITE_UPLOAD_PRESET);
+  const cloud_name = import.meta.env.VITE_CLOUD_NAME;
+
+  const res = await fetch(
+    `https://api.cloudinary.com/v1_1/${cloud_name}/image/upload`,
+    {
+      method: "POST",
+      body: data,
+    }
+  );
+
+  const uploadedImage = await res.json();
+  return uploadedImage.secure_url;
+};
+
+const handleRemoveImage = (index)=>{
+  console.log("Image index = ",index);
+
+  setFormData({
+    ...formData,
+    imageUrls:formData.imageUrls.filter((_,i)=> i!== index),
+  });
+
+}
+
+
   return (
     <main className="max-w-4xl p-3 mx-auto">
         <h1 className="text-3xl font-semibold text-center my-7">Create a Listing</h1>
@@ -32,17 +119,17 @@ export default function CreateListing() {
                 </div>
                 <div className="flex gap-6 flex-wrap">
                   <div className="flex gap-2 items-center">
-                        <input type="number" name="bedrooms" min="1" max="10" id="bedrooms" className="p-3 bg-white border-gray-300 rounded-lg"/>
+                        <input type="number" name="bedrooms" min="1" max="10" id="bedrooms" className="p-3 bg-white border-gray-300 border rounded-lg"/>
                         <p>Beds</p>
                   </div>
 
                   <div className="flex gap-2 items-center">
-                        <input type="number" name="bathrooms" min="1" max="10" id="bathrooms" className="p-3 bg-white border-gray-300 rounded-lg"/>
+                        <input type="number" name="bathrooms" min="1" max="10" id="bathrooms" className="p-3 bg-white border-gray-300 border rounded-lg"/>
                         <p>Baths</p>
                   </div>
 
                   <div className="flex gap-2 items-center">
-                        <input type="number" name="regularPrice" min="1" max="10" id="regularPrice" className="p-3 bg-white border-gray-300 rounded-lg"/>
+                        <input type="number" name="regularPrice" min="1" max="10" id="regularPrice" className="p-3 bg-white border-gray-300 border rounded-lg"/>
                         <div className="flex flex-col items-center">
                           <p>Regular price</p>
                           <span className="text-sm">($ / month)</span>
@@ -64,9 +151,34 @@ export default function CreateListing() {
                   <span className="font-normal text-gray-600 ml-2">The first image will be the cover (max: 6)</span>
                 </p>
                 <div className="flex gap-4">
-                  <input className="p-3 border border-gray-300 rounded w-full" type="file" name="images" id="images" accept="image/*" multiple />
-                  <button className="p-3 text-green-700 border-green-700 border rounded uppercase hover:shadow-lg disabled:opacity-80">Upload</button>
+                  <input onChange={(e)=>setFiles(Array.from(e.target.files))} className="p-3 border border-gray-300 rounded w-full" type="file" name="images" id="images" accept="image/*" multiple />
+                  <button disabled={loadingProgress} onClick={handleFileUpload} type="button" className="p-3 text-green-700 border-green-700 border rounded uppercase hover:shadow-lg disabled:opacity-80">
+                    {
+                      loadingProgress? 'Uploading...':'upload'
+                    }
+                  </button>
                 </div>
+            <p className="text-red-700 text-sm">
+              {
+                imageUploadError? imageUploadError:''
+              }
+            </p>
+            
+              {
+                formData.imageUrls.length > 0 
+              ?
+              (
+                formData.imageUrls.map((url,index)=>{
+                    return <div key={url} className="flex justify-between p-3 border border-gray-200 items-center rounded-lg">
+                      <img className="w-20 h-20 object-contain rounded-lg" src={url} alt="listing image"/>
+                      <button type="button" onClick={()=>handleRemoveImage(index)} className="uppercase text-red-700 p-2 rounded-lg border border-red-400 hover:opacity-65 hover:bg-red-600 hover:text-white">Delete</button>
+                    </div>
+                })
+              )
+              : null
+              }
+
+
                 <button className="bg-slate-700 uppercase p-3 rounded-lg text-white hover:opacity-95 disabled:opacity-80">Create Listing</button>
             </div>
         </form>
