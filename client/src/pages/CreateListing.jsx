@@ -201,20 +201,29 @@ console.log("SubmitError = ",SubmitError);
                   </div>
 
                   <div className="flex gap-2 items-center">
-                        <input type="number" name="regularPrice" min="50" max="10000" id="regularPrice" className="p-3 bg-white border-gray-300 border rounded-lg" onChange={handleChange} value={formData.regularPrice}/>
+                        <input type="number" name="regularPrice" min="50" max="10000000" id="regularPrice" className="p-3 bg-white border-gray-300 border rounded-lg" onChange={handleChange} value={formData.regularPrice}/>
                         <div className="flex flex-col items-center">
                           <p>Regular price</p>
-                          <span className="text-sm">($ / month)</span>
+                          {
+                            formData.type =='rent' &&(
+                              <span className="text-sm">($ / month)</span>
+                            )
+                          }
                         </div>
                   </div>
                   {
                     formData.offer
                     ?
                     (<div className="flex gap-2 items-center">
-                        <input type="number" name="discountPrice" min="0" max="10000" id="discountPrice" className="p-3 bg-white border-gray-300 rounded-lg" onChange={handleChange} value={formData.discountPrice}/>
+                        <input type="number" name="discountPrice" min="0" max="10000000" id="discountPrice" className="p-3 bg-white border-gray-300 rounded-lg" onChange={handleChange} value={formData.discountPrice}/>
                         <div className="flex flex-col items-center">
                           <p>Descounted price</p>
-                          <span className="text-sm">($ / month)</span>
+                          {
+                            formData.type =='rent' &&(
+                              <span className="text-sm">($ / month)</span>
+                            )
+                          }
+                          
                         </div>
                   </div>)
                     :
