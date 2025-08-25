@@ -8,9 +8,10 @@ import SwiperCore from 'swiper';
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
-
 // Optional modules
 import { Navigation, Pagination, Autoplay } from "swiper/modules";
+import { useSelector } from 'react-redux';
+import Contact from "../components/Contact";
 
 export default function Listing() {
     SwiperCore.use(Navigation)
@@ -19,6 +20,8 @@ export default function Listing() {
     const [isCopied ,setIsCopied] = useState(false);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(false);
+    const {currentUser} = useSelector((state)=>state.user);
+    const [contact, setContact] = useState(false);
     console.log("listData = ",listData);
 
     useEffect(()=>{
@@ -130,6 +133,16 @@ export default function Listing() {
                     </li>
 
                 </ul>
+                {
+                    currentUser && listData.userRef!==currentUser._id && !contact && (
+                        <button onClick={()=>setContact(true)} className="bg-slate-700 text-white rounded-lg uppercase hover:opacity-95 p-3">Contact Landlord</button>
+                    )
+                }
+                {
+                    contact ? <Contact listing={listData}/>:null
+                }
+
+                
 
 
 
