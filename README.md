@@ -71,7 +71,7 @@ It provides secure authentication, property management, and image hosting with C
 
 ### 1️⃣ Clone the repository
 ```bash
-git clone https://github.com/your-username/reactive-estate.git
+git clone https://github.com/NRKRaj14397/reactive-estates.git
 cd reactive-estate
 ````
 
