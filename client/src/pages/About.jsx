@@ -8,8 +8,8 @@ export default function About() {
         {/* Hero Section */}
         <div className="text-center max-w-3xl mx-auto">
           <h2 className="text-4xl md:text-5xl font-extrabold text-slate-800 mb-6 leading-tight">
-            About <span className='text-slate-500'>Reactive</span>
-                  <span className='text-slate-600'>Estate</span>
+            About <span className="text-indigo-600">Reactive</span>
+            <span className="text-slate-800">Estate</span>
           </h2>
           <p className="text-lg text-gray-600">
             We’re redefining the way people discover their dream homes. At{" "}

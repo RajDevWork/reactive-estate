@@ -1,46 +1,61 @@
-import { Link } from 'react-router-dom'
-import {MdLocationOn} from 'react-icons/md';
+import { Link } from "react-router-dom";
+import { MdLocationOn } from "react-icons/md";
 
-export default function ListingItem({listing}) {
-    console.log()
+export default function ListingItem({ listing }) {
   return (
-    <div className='bg-white shadow-md hover:shadow-lg transition-shadow overflow-hidden rounded-lg w-full sm:w-[250px]'>
-        <Link to={`/listing/${listing._id}`}>
-            <img src={listing.imageUrls[0]} alt="listing cover" 
-            className='h-[320px] w-[320px] sm:h-[220px] w-full object-cover hover:scale-105 transition-scale duration-300'
-            />
-            <div className='p-3 flex flex-col gap-2 w-full'>
-                <p className='truncate text-lg font-semibold text-slate-700'>{listing.name}</p>
-            </div>
-            <div className='p-3 flex items-center gap-1'>
-                <MdLocationOn  className='w-4 h-4 text-green-700'/>
-                <p className='truncate text-gray-600 w-full'>{listing.address}</p>
-            </div>
-            <div className='p-3'>
-                <p className='text-sm text-gray-600 line-clamp-2'>{listing.description}</p>
-                <p className='text-slate-500 font-semibold mt-2'>
-                   $ {listing.offer 
-  ? Number(listing?.discountPrice).toLocaleString('en-IN') 
-  : Number(listing?.regularPrice).toLocaleString('en-IN')}
+    <div className="bg-white shadow-md hover:shadow-xl transition rounded-2xl overflow-hidden w-full sm:w-[280px]">
+      <Link to={`/listing/${listing._id}`}>
+        {/* Image */}
+        <div className="relative w-full h-[220px] sm:h-[200px] overflow-hidden">
+          <img
+            src={listing.imageUrls[0]}
+            alt="listing cover"
+            className="w-full h-full object-cover hover:scale-110 transition-transform duration-500"
+          />
+        </div>
 
-                    {
-                        listing.type =='rent' && ' / month'
-                    }
-                </p>
-                <div className='text-slate-700 flex gap-4'>
-                    <div className='font-bold text-xs'>
-                        {
-                            listing.bathrooms > 1 ?`${listing.bathrooms} Baths`:`${listing.bathrooms} Bath`
-                        }
-                    </div>
-                    <div className='font-bold text-xs'>
-                        {
-                            listing.bedrooms > 1 ?`${listing.bedrooms} Beds`:`${listing.bedrooms} Bed`
-                        }
-                    </div>
-                </div>
-            </div>
-        </Link>
+        {/* Content */}
+        <div className="p-4 flex flex-col gap-3">
+          {/* Title */}
+          <p className="truncate text-lg font-semibold text-slate-800">
+            {listing.name}
+          </p>
+
+          {/* Location */}
+          <div className="flex items-center gap-1 text-sm text-gray-600">
+            <MdLocationOn className="w-5 h-5 text-green-600 shrink-0" />
+            <p className="truncate">{listing.address}</p>
+          </div>
+
+          {/* Description */}
+          <p className="text-sm text-gray-500 line-clamp-2">
+            {listing.description}
+          </p>
+
+          {/* Price */}
+          <p className="text-indigo-600 font-bold text-base">
+            ${" "}
+            {listing.offer
+              ? Number(listing?.discountPrice).toLocaleString("en-IN")
+              : Number(listing?.regularPrice).toLocaleString("en-IN")}
+            {listing.type === "rent" && " / month"}
+          </p>
+
+          {/* Beds & Baths */}
+          <div className="flex gap-6 text-slate-700 text-xs font-medium">
+            <span>
+              {listing.bathrooms > 1
+                ? `${listing.bathrooms} Baths`
+                : `${listing.bathrooms} Bath`}
+            </span>
+            <span>
+              {listing.bedrooms > 1
+                ? `${listing.bedrooms} Beds`
+                : `${listing.bedrooms} Bed`}
+            </span>
+          </div>
+        </div>
+      </Link>
     </div>
-  )
+  );
 }
