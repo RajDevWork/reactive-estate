@@ -93,7 +93,7 @@ export default function Listing() {
                     },2000) && (<p className="fixed top-[23%] right-[5%] z-10 rounded-md bg-slate-100 p-2">Link copied!</p>)
                 }
                 <div className="flex flex-col max-w-4xl mx-auto p-3 my-6 gap-6">
-                    <p className="text-2xl font-semibold">{listData.name} - $ {''}{listData.offer ? listData?.discountPrice.toLocaleString('en-US') : listData?.regularPrice.toLocaleString('en-US')} {listData.type === 'rent' && '/ month'}</p> 
+                    <p className="text-2xl font-semibold">{listData.name} - $ {''}{listData.offer ? Number(listData?.discountPrice).toLocaleString('en-US') : Number(listData?.regularPrice).toLocaleString('en-US')} {listData.type === 'rent' && '/ month'}</p> 
 
                     <p className="flex items-center mt-6 gap-2 text-slate-600 my-2 text-sm">
                         <FaMapMarkerAlt className="text-green-700"/> {listData.address}

@@ -13,6 +13,7 @@
     "@cloudinary/react": "^1.14.3",
     "@cloudinary/url-gen": "^1.21.0",
     "@reduxjs/toolkit": "^2.8.2",
+    "@tailwindcss/line-clamp": "^0.4.4",
     "@tailwindcss/vite": "^4.1.12",
     "firebase": "^12.1.0",
     "react": "^19.1.1",
