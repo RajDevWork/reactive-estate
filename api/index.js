@@ -5,11 +5,11 @@ import userRouter from "./routes/user.routes.js";
 import authRouter from "./routes/auth.routes.js";
 import listingRouter from "./routes/listing.routes.js";
 import cookieParser from "cookie-parser";
-// import path from "path";
+import path from "path";
 // import { fileURLToPath } from "url";
 
 // const __filename = fileURLToPath(import.meta.url);
-// const __dirname = path.dirname(__filename);
+const __dirname = path.resolve();
 
 // ✅ Explicit path
 // dotenv.config({ path: path.join(__dirname, ".env") });
@@ -41,6 +41,15 @@ app.use("/api/auth",authRouter);
 app.use("/api/listing",listingRouter);
 
 
+app.use(express.static(path.join(__dirname, 'client/dist')));
+
+// app.get("/*",(req,res)=>{
+//   res.sendFile(path.join(__dirname,'client','dist','index.html'));
+// })
+
+app.get(/.*/, (req, res) => {
+  res.sendFile(path.join(__dirname, "client", "dist", "index.html"));
+});
 //Middleware
 /***
  * Jo tumne likha hai wo Express ka global error handling middleware hai.
