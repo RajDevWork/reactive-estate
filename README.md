@@ -1,19 +1,3 @@
-Got it 👍
-Main aapke project ke liye ek **professional GitHub README.md** bana deta hoon jisme:
-
-* Project overview
-* Tech stack
-* Features (Oauth, JWT, Firebase, Cloudinary, etc.)
-* Installation steps
-* Folder structure (jo aapne diya hai)
-* Usage guide
-* Screenshots section (agar aap add karna chahe)
-
-Yeh raha complete README content:
-
----
-
-```markdown
 # 🏠 Reactive Estate
 
 A full-stack real estate application built with **MERN + Vite + Tailwind CSS**.  
