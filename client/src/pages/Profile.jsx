@@ -203,78 +203,260 @@ const handleDeleteListing = async(listid) =>{
 }
 
   return (
-    <div className='p-3 max-w-lg mx-auto'>
-      <h1 className='text-3xl font-semibold text-center my-3'>Profile</h1>
-      <form onSubmit={handleSubmit} className='flex flex-col gap-4'>
-        <input onChange={(e)=>setFile(e.target.files[0])} type="file" ref={fileref} hidden accept='image/*'/>
-        <img onClick={()=>fileref.current.click()} src={myFormData?.avatar || currentUser.avatar} alt="Profile" className='rounded-full w-24 h-24 object-cover cursor-pointer self-center mt-2' />
-        <p className='text-sm self-center'>
-          {fileUploadError 
-          ? 
-          (<span className='text-red-700'>Image upload Error</span>)
-          :
-          progress > 0 && progress < 100 
-            ? (<span className='text-slate-700'>Image uploading {progress}%</span>)
-          :
-          progress==100 ? (<span className='text-green-700'>Image Uploaded Successfully!</span>) : ''
+    <div className='min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 py-8'>
+      <div className='max-w-4xl mx-auto px-4'>
+        {/* Profile Header */}
+        <div className='bg-white/80 backdrop-blur-lg rounded-3xl shadow-2xl p-8 mb-8 relative overflow-hidden'>
+          {/* Decorative elements */}
+          <div className='absolute top-4 right-4 w-20 h-20 bg-gradient-to-r from-blue-200 to-purple-200 rounded-full opacity-20 animate-pulse'></div>
+          <div className='absolute bottom-4 left-4 w-16 h-16 bg-gradient-to-r from-indigo-200 to-blue-200 rounded-full opacity-30 animate-bounce'></div>
           
-          }
-        </p>
-
-        <input type="text" name="username" defaultValue={currentUser.username} id="username" placeholder='username' className='border p-3 rounded-lg' onChange={handleChange}/>
-        <input type="email" name="email" defaultValue={currentUser.email} id="email" placeholder='email' className='border p-3 rounded-lg' onChange={handleChange}/>
-        <input type="password" name="password" id="password" placeholder='password' className='border p-3 rounded-lg' onChange={handleChange}/>
-        <button disabled={loading} className='uppercase bg-slate-700 text-white p-3 rounded-lg hover:opacity-95 disabled:opacity-80'>{loading?'Loading..':'update'}</button>
-        <Link className="bg-green-700 text-white p-3 rounded-lg text-center uppercase hover:opacity-95 disabled:opacity-80" to={"/create-listing"}>
-          Create Listing
-        </Link>
-      </form>
-      <div className='flex justify-between mt-5'>
-        <span onClick={handleDeleteUser} className='text-red-700 cursor-pointer'>Delete account</span>
-        <span onClick={handleLogout} className='text-red-700 cursor-pointer'>Sign Out</span>
-      </div>
-      <p className='text-red-700 mt-5 self-center text-center'>{error ? currentUser?.message : currentUser?.message }</p>
-      <p className='text-green-700 mt-5 self-center text-center'>{updateSuccess ? 'User updated Successfully' : '' }</p>
-
-      <button onClick={handleShowListing} className='text-green-700 w-full'>Show Listing</button>
-      <p className='text-red-700 text-center mt-5'>
-        {showListingError? showListingError:''}
-      </p>
-
-      {
-        userListins && userListins.length > 0 
-        ? <h1 className='text-2xl font-semibold text-center my-7'>Your Listings</h1>
-        :null
-      }
-
-      {
-        userListins && userListins.length > 0 
-        ?
-        (
-          
-          userListins.map((list)=>{
-            return <div key={list._id} className='border border-gray-300 p-3 rounnded-lg flex justify-between items-center my-2 gap-4 rounded-lg'>
-                <Link to={`/listing/${list._id}`}>
-                  <img src={list.imageUrls[0]} alt="listing" className='w-16 h-16 object-contain'/>
-                </Link>
-                <Link className='text-slate-700 font-semibold flex-1 hover:underline truncate' to={`/listing/${list._id}`}>
-                <p >{list.name}</p>
-                </Link>
-                <div className='flex flex-col'>
-                  <button onClick={()=>handleDeleteListing(list._id)}className='text-red-700 hover:underline uppercase cursor-pointer'>Delete</button>
-                  <Link to={`/update-listing/${list._id}`}>
-                    <button className='text-green-700 hover:underline uppercase cursor-pointer'>Edit</button>
-                  </Link>
+          <div className='relative z-10'>
+            <h1 className='text-4xl font-bold text-center mb-8 bg-gradient-to-r from-slate-800 to-slate-600 bg-clip-text text-transparent'>
+              👤 My Profile
+            </h1>
+            
+            {/* Profile Picture Section */}
+            <div className='flex flex-col items-center mb-8'>
+              <input onChange={(e)=>setFile(e.target.files[0])} type="file" ref={fileref} hidden accept='image/*'/>
+              <div className='relative group'>
+                <img 
+                  onClick={()=>fileref.current.click()} 
+                  src={myFormData?.avatar || currentUser.avatar} 
+                  alt="Profile" 
+                  className='rounded-full w-32 h-32 object-cover cursor-pointer border-4 border-white shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105' 
+                />
+                <div className='absolute inset-0 rounded-full bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center'>
+                  <span className='text-white font-semibold'>📷 Change</span>
                 </div>
-
+              </div>
+              
+              {/* Upload Progress */}
+              <div className='mt-4 text-center'>
+                {fileUploadError && (
+                  <div className='bg-red-100 border border-red-400 text-red-700 px-4 py-2 rounded-xl inline-flex items-center gap-2'>
+                    <span>❌</span>
+                    <span className='font-medium'>Image upload failed</span>
+                  </div>
+                )}
+                {progress > 0 && progress < 100 && (
+                  <div className='bg-blue-100 border border-blue-400 text-blue-700 px-4 py-2 rounded-xl inline-flex items-center gap-2'>
+                    <span>📤</span>
+                    <span className='font-medium'>Uploading... {progress}%</span>
+                    <div className='w-20 h-2 bg-blue-200 rounded-full overflow-hidden'>
+                      <div className='h-full bg-blue-600 rounded-full transition-all duration-300' style={{width: `${progress}%`}}></div>
+                    </div>
+                  </div>
+                )}
+                {progress === 100 && (
+                  <div className='bg-green-100 border border-green-400 text-green-700 px-4 py-2 rounded-xl inline-flex items-center gap-2'>
+                    <span>✅</span>
+                    <span className='font-medium'>Image uploaded successfully!</span>
+                  </div>
+                )}
+              </div>
             </div>
 
-          })
-        )
-        :null
-      }
+            {/* Update Form */}
+            <form onSubmit={handleSubmit} className='space-y-6'>
+              <div className='grid md:grid-cols-1 gap-6'>
+                {/* Username */}
+                <div className='group'>
+                  <label className='block text-sm font-semibold text-slate-700 mb-2 uppercase tracking-wide'>
+                    Username
+                  </label>
+                  <input 
+                    type="text" 
+                    name="username" 
+                    defaultValue={currentUser.username} 
+                    id="username" 
+                    placeholder='Enter your username' 
+                    className='w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 outline-none transition-all duration-300 bg-white/50 backdrop-blur-sm shadow-sm hover:shadow-md' 
+                    onChange={handleChange}
+                  />
+                </div>
 
+                {/* Email */}
+                <div className='group'>
+                  <label className='block text-sm font-semibold text-slate-700 mb-2 uppercase tracking-wide'>
+                    Email Address
+                  </label>
+                  <input 
+                    type="email" 
+                    name="email" 
+                    defaultValue={currentUser.email} 
+                    id="email" 
+                    placeholder='Enter your email' 
+                    className='w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:border-purple-500 focus:ring-4 focus:ring-purple-500/20 outline-none transition-all duration-300 bg-white/50 backdrop-blur-sm shadow-sm hover:shadow-md' 
+                    onChange={handleChange}
+                  />
+                </div>
 
+                {/* Password */}
+                <div className='group'>
+                  <label className='block text-sm font-semibold text-slate-700 mb-2 uppercase tracking-wide'>
+                    New Password
+                  </label>
+                  <input 
+                    type="password" 
+                    name="password" 
+                    id="password" 
+                    placeholder='Enter new password (optional)' 
+                    className='w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/20 outline-none transition-all duration-300 bg-white/50 backdrop-blur-sm shadow-sm hover:shadow-md' 
+                    onChange={handleChange}
+                  />
+                </div>
+              </div>
+
+              {/* Update Button */}
+              <button 
+                disabled={loading} 
+                className='w-full bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 text-white py-4 rounded-xl font-bold text-lg shadow-xl hover:shadow-2xl hover:scale-105 transition-all duration-300 transform border-2 border-white/20 backdrop-blur-sm disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100'
+              >
+                {loading ? (
+                  <div className='flex items-center justify-center gap-2'>
+                    <div className='w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin'></div>
+                    Updating...
+                  </div>
+                ) : (
+                  '✨ Update Profile'
+                )}
+              </button>
+
+              {/* Create Listing Button */}
+              <Link 
+                className="block w-full bg-gradient-to-r from-green-500 to-blue-500 text-white py-4 rounded-xl text-center font-bold text-lg shadow-xl hover:shadow-2xl hover:scale-105 transition-all duration-300 transform border-2 border-white/20 backdrop-blur-sm" 
+                to={"/create-listing"}
+              >
+                🏠 Create New Listing
+              </Link>
+            </form>
+
+            {/* Status Messages */}
+            {error && (
+              <div className='mt-6 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-xl text-center font-medium'>
+                ❌ {error}
+              </div>
+            )}
+            {updateSuccess && (
+              <div className='mt-6 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-xl text-center font-medium'>
+                ✅ Profile updated successfully!
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Account Actions */}
+        <div className='bg-white/80 backdrop-blur-lg rounded-3xl shadow-xl p-6 mb-8'>
+          <h2 className='text-2xl font-bold text-slate-800 mb-6 text-center'>Account Settings</h2>
+          <div className='flex flex-col sm:flex-row gap-4'>
+            <button 
+              onClick={handleDeleteUser} 
+              className='flex-1 bg-gradient-to-r from-red-500 to-pink-500 text-white py-3 px-6 rounded-xl font-semibold shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 transform border-2 border-white/20 backdrop-blur-sm'
+            >
+              🗑️ Delete Account
+            </button>
+            <button 
+              onClick={handleLogout} 
+              className='flex-1 bg-gradient-to-r from-orange-500 to-red-500 text-white py-3 px-6 rounded-xl font-semibold shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 transform border-2 border-white/20 backdrop-blur-sm'
+            >
+              🚪 Sign Out
+            </button>
+          </div>
+        </div>
+
+        {/* Listings Section */}
+        <div className='bg-white/80 backdrop-blur-lg rounded-3xl shadow-xl p-8'>
+          <div className='text-center mb-8'>
+            <h2 className='text-3xl font-bold text-slate-800 mb-4 bg-gradient-to-r from-slate-800 to-slate-600 bg-clip-text text-transparent'>
+              🏠 My Listings
+            </h2>
+            <button 
+              onClick={handleShowListing} 
+              className='bg-gradient-to-r from-blue-500 to-purple-500 text-white px-8 py-3 rounded-xl font-bold text-lg shadow-xl hover:shadow-2xl hover:scale-105 transition-all duration-300 transform border-2 border-white/20 backdrop-blur-sm'
+            >
+              📋 Show My Listings
+            </button>
+          </div>
+
+          {/* Error Message */}
+          {showListingError && (
+            <div className='bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-xl text-center font-medium mb-6'>
+              ❌ {showListingError}
+            </div>
+          )}
+
+          {/* Listings Grid */}
+          {userListins && userListins.length > 0 && (
+            <div className='space-y-6'>
+              {userListins.map((list, index) => (
+                <div 
+                  key={list._id} 
+                  className='bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 border border-slate-200 overflow-hidden group'
+                  style={{ animationDelay: `${index * 100}ms` }}
+                >
+                  <div className='flex flex-col sm:flex-row'>
+                    {/* Image */}
+                    <div className='sm:w-48 h-48 sm:h-auto flex-shrink-0'>
+                      <Link to={`/listing/${list._id}`}>
+                        <img 
+                          src={list.imageUrls[0]} 
+                          alt="listing" 
+                          className='w-full h-full object-cover group-hover:scale-105 transition-transform duration-300' 
+                        />
+                      </Link>
+                    </div>
+
+                    {/* Content */}
+                    <div className='flex-1 p-6'>
+                      <Link to={`/listing/${list._id}`}>
+                        <h3 className='text-xl font-bold text-slate-800 mb-2 hover:text-blue-600 transition-colors line-clamp-2'>
+                          {list.name}
+                        </h3>
+                      </Link>
+                      
+                      <div className='flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mt-4'>
+                        <div className='flex gap-4'>
+                          <button 
+                            onClick={()=>handleDeleteListing(list._id)}
+                            className='bg-gradient-to-r from-red-500 to-pink-500 text-white px-4 py-2 rounded-lg font-semibold shadow-md hover:shadow-lg hover:scale-105 transition-all duration-300'
+                          >
+                            🗑️ Delete
+                          </button>
+                          <Link to={`/update-listing/${list._id}`}>
+                            <button className='bg-gradient-to-r from-green-500 to-blue-500 text-white px-4 py-2 rounded-lg font-semibold shadow-md hover:shadow-lg hover:scale-105 transition-all duration-300'>
+                              ✏️ Edit
+                            </button>
+                          </Link>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Empty State */}
+          {userListins && userListins.length === 0 && !showListingError && (
+            <div className='text-center py-12'>
+              <div className='w-24 h-24 bg-gradient-to-r from-slate-200 to-slate-300 rounded-full flex items-center justify-center mb-6 shadow-lg mx-auto'>
+                <span className='text-4xl'>🏠</span>
+              </div>
+              <h3 className='text-2xl font-bold text-slate-800 mb-2'>No Listings Yet</h3>
+              <p className='text-slate-600 text-lg mb-6'>
+                You haven't created any listings yet. Start by creating your first property listing!
+              </p>
+              <Link 
+                to="/create-listing"
+                className='inline-block bg-gradient-to-r from-blue-500 to-purple-500 text-white px-8 py-3 rounded-xl font-bold text-lg shadow-xl hover:shadow-2xl hover:scale-105 transition-all duration-300 transform border-2 border-white/20 backdrop-blur-sm'
+              >
+                ➕ Create Your First Listing
+              </Link>
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   )
 }

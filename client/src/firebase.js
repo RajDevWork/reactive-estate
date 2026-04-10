@@ -6,11 +6,11 @@ import { initializeApp } from "firebase/app";
 // Your web app's Firebase configuration
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
-  authDomain: "reactiveestates.firebaseapp.com",
-  projectId: "reactiveestates",
-  storageBucket: "reactiveestates.firebasestorage.app",
-  messagingSenderId: "503131997600",
-  appId: "1:503131997600:web:d8c3fd1b4ecda909ea50c5"
+  authDomain: import.meta.env.AUTH_DOMAIN,
+  projectId: import.meta.env.PROJECTID,
+  storageBucket: import.meta.env.STORAGEBUCKET,
+  messagingSenderId: import.meta.env.MESSAGINGSENDERID,
+  appId: import.meta.env.APPID
 };
 
 // Initialize Firebase
