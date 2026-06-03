@@ -74,9 +74,10 @@ export default function Header() {
                 <span className="hidden sm:inline">My Profile</span>
               </Link>
             ) : (
-              <Link to="/signin" className="inline-flex items-center rounded-full bg-gradient-to-r from-indigo-500 to-purple-600 px-5 py-3 text-sm font-semibold text-white shadow-xl shadow-indigo-500/20 transition hover:brightness-110">
+              <Link to="/sign-in" className="inline-flex items-center rounded-full bg-gradient-to-r from-indigo-500 to-purple-600 px-5 py-3 text-sm font-semibold text-white shadow-xl shadow-indigo-500/20 transition hover:brightness-110">
                 Sign In
               </Link>
+              
             )}
           </div>
         </div>
