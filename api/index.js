@@ -18,13 +18,10 @@ dotenv.config();
 const PORT = 3000;
 const MONGO_URI = process.env.MONGO_URI;
 
-console.log("Mongo URI from env:", MONGO_URI); // debug karo
+// console.log("Mongo URI from env:", MONGO_URI); // debug karo
 
 mongoose
-  .connect(MONGO_URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  })
+  .connect(MONGO_URI)
   .then(() => console.log("✅ MongoDB Connected"))
   .catch((err) => console.error("❌ MongoDB Connection Error:", err));
 
