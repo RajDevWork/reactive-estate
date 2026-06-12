@@ -231,43 +231,126 @@ console.log("recommendations = ",recommendations)
               {/* AI Engine Recommendation */}
 
               {recommendationLoading && (
-              <div className="mt-16">
+  <section className="mt-20">
 
-                <div className="relative overflow-hidden rounded-[32px]">
+    {/* Skeleton Header */}
 
-                  <div className="absolute inset-0 bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600"></div>
+    <div className="relative overflow-hidden rounded-[36px] mb-10 bg-white border border-gray-200 shadow-xl">
 
-                  <div className="relative z-10 p-8">
+      <div className="absolute inset-0 bg-gradient-to-r from-indigo-50 via-purple-50 to-pink-50"></div>
 
-                    <div className="flex items-center gap-4">
+      <div className="relative z-10 p-8 md:p-10">
 
-                      <div className="w-14 h-14 rounded-2xl bg-white/20 backdrop-blur-xl flex items-center justify-center text-2xl">
-                        ✨
-                      </div>
+        <div className="flex items-center gap-4">
 
-                      <div>
-                        <p className="uppercase tracking-[0.3em] text-white/70 text-xs">
-                          Gemini AI Engine
-                        </p>
+          <div className="w-16 h-16 rounded-3xl ai-skeleton"></div>
 
-                        <h2 className="text-3xl font-bold text-white">
-                          Analyzing Similar Properties
-                        </h2>
-                      </div>
+          <div>
+            <div className="h-3 w-40 rounded mb-3 ai-skeleton"></div>
+            <div className="h-8 w-72 rounded ai-skeleton"></div>
+          </div>
 
-                    </div>
+        </div>
 
-                    <p className="text-white/90 mt-4">
-                      Finding the most relevant properties based on price,
-                      bedrooms, amenities and property characteristics...
-                    </p>
+        <div className="mt-6 space-y-3">
 
-                  </div>
+          <div className="h-4 w-full max-w-2xl rounded ai-skeleton"></div>
 
-                </div>
+          <div className="h-4 w-4/5 rounded ai-skeleton"></div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+    {/* Skeleton Cards */}
+
+    <div className="grid lg:grid-cols-2 gap-8">
+
+      {[1, 2, 3, 4].map((item) => (
+
+        <div
+          key={item}
+          className="overflow-hidden rounded-[32px] bg-white border border-gray-200 shadow-xl"
+        >
+
+          {/* Image */}
+
+          <div className="h-72 ai-skeleton"></div>
+
+          <div className="p-6">
+
+            {/* Match Badge */}
+
+            <div className="flex justify-between mb-5">
+
+              <div className="h-8 w-24 rounded-full ai-skeleton"></div>
+
+              <div className="h-8 w-20 rounded-full ai-skeleton"></div>
+
+            </div>
+
+            {/* Title */}
+
+            <div className="h-7 w-2/3 rounded mb-3 ai-skeleton"></div>
+
+            {/* Address */}
+
+            <div className="h-4 w-full rounded mb-6 ai-skeleton"></div>
+
+            {/* Tags */}
+
+            <div className="flex flex-wrap gap-2 mb-5">
+
+              <div className="h-7 w-20 rounded-full ai-skeleton"></div>
+
+              <div className="h-7 w-20 rounded-full ai-skeleton"></div>
+
+              <div className="h-7 w-24 rounded-full ai-skeleton"></div>
+
+              <div className="h-7 w-20 rounded-full ai-skeleton"></div>
+
+            </div>
+
+            {/* AI Insight */}
+
+            <div className="rounded-2xl border border-slate-100 p-4">
+
+              <div className="flex items-center gap-2 mb-4">
+
+                <div className="w-8 h-8 rounded-full ai-skeleton"></div>
+
+                <div className="h-4 w-32 rounded ai-skeleton"></div>
 
               </div>
-            )}
+
+              <div className="space-y-3">
+
+                <div className="h-4 w-full rounded ai-skeleton"></div>
+
+                <div className="h-4 w-5/6 rounded ai-skeleton"></div>
+
+                <div className="h-4 w-3/4 rounded ai-skeleton"></div>
+
+              </div>
+
+            </div>
+
+            {/* CTA Button */}
+
+            <div className="h-12 rounded-2xl mt-5 ai-skeleton"></div>
+
+          </div>
+
+        </div>
+
+      ))}
+
+    </div>
+
+  </section>
+)}
 
             {recommendations.length > 0 && (
               <section className="mt-20">
