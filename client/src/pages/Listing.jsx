@@ -19,6 +19,9 @@ export default function Listing() {
   const { currentUser } = useSelector((state) => state.user);
   const [contact, setContact] = useState(false);
 
+  const [recommendations, setRecommendations] = useState([]);
+  const [recommendationLoading, setRecommendationLoading] = useState(false);
+
   useEffect(() => {
     if (!isCopied) return;
     const timer = setTimeout(() => setIsCopied(false), 2000);
@@ -56,6 +59,40 @@ export default function Listing() {
 
     fetchListing();
   }, [params.listingID]);
+
+  useEffect(() => {
+  const fetchRecommendations = async () => {
+    try {
+      setRecommendationLoading(true);
+
+      const res = await fetch(
+        `/api/listing/recommendations/${params.listingID}`
+      );
+
+      const data = await res.json();
+
+      if (data.success === false) {
+        console.log(data.message);
+        return;
+      }
+
+      setRecommendations(data);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setRecommendationLoading(false);
+    }
+  };
+
+  if (params.listingID) {
+    fetchRecommendations();
+  }
+}, [params.listingID]);
+
+console.log("recommendations = ",recommendations)
+
+
+
 
   return (
     <main className="min-h-screen bg-gradient-to-b from-gray-50 to-white text-gray-900">
@@ -190,9 +227,224 @@ export default function Listing() {
                 </div>
               </aside>
             </div>
+
+              {/* AI Engine Recommendation */}
+
+              {recommendationLoading && (
+              <div className="mt-16">
+
+                <div className="relative overflow-hidden rounded-[32px]">
+
+                  <div className="absolute inset-0 bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600"></div>
+
+                  <div className="relative z-10 p-8">
+
+                    <div className="flex items-center gap-4">
+
+                      <div className="w-14 h-14 rounded-2xl bg-white/20 backdrop-blur-xl flex items-center justify-center text-2xl">
+                        ✨
+                      </div>
+
+                      <div>
+                        <p className="uppercase tracking-[0.3em] text-white/70 text-xs">
+                          Gemini AI Engine
+                        </p>
+
+                        <h2 className="text-3xl font-bold text-white">
+                          Analyzing Similar Properties
+                        </h2>
+                      </div>
+
+                    </div>
+
+                    <p className="text-white/90 mt-4">
+                      Finding the most relevant properties based on price,
+                      bedrooms, amenities and property characteristics...
+                    </p>
+
+                  </div>
+
+                </div>
+
+              </div>
+            )}
+
+            {recommendations.length > 0 && (
+              <section className="mt-20">
+
+                {/* Hero Header */}
+
+                <div className="relative overflow-hidden rounded-[36px] mb-10">
+
+                  <div className="absolute inset-0 bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600"></div>
+
+                  <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.25),transparent_35%)]"></div>
+
+                  <div className="relative z-10 p-8 md:p-10">
+
+                    <div className="flex items-center gap-4">
+
+                      <div className="w-16 h-16 rounded-3xl bg-white/20 backdrop-blur-xl flex items-center justify-center text-3xl shadow-xl">
+                        ✨
+                      </div>
+
+                      <div>
+                        <p className="uppercase tracking-[0.35em] text-white/70 text-xs">
+                          Powered by Gemini AI
+                        </p>
+
+                        <h2 className="text-3xl md:text-4xl font-bold text-white">
+                          AI Recommended Properties
+                        </h2>
+                      </div>
+
+                    </div>
+
+                    <p className="text-white/90 mt-5 max-w-3xl leading-7">
+                      Our AI analyzed this property and identified the
+                      most relevant alternatives based on budget,
+                      configuration, amenities and listing attributes.
+                    </p>
+
+                  </div>
+
+                </div>
+
+                {/* Cards */}
+
+                <div className="grid lg:grid-cols-2 gap-8">
+
+                  {recommendations.map((listing) => (
+
+                    <div
+                      key={listing._id}
+                      className="group relative overflow-hidden rounded-[32px] bg-white border border-gray-200 shadow-xl hover:shadow-[0_20px_80px_rgba(99,102,241,0.20)] transition-all duration-500 hover:-translate-y-2"
+                    >
+
+                      {/* Image */}
+
+                      <div className="relative h-72 overflow-hidden">
+
+                        <img
+                          src={listing.imageUrls[0]}
+                          alt={listing.name}
+                          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                        />
+
+                        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent"></div>
+
+                        {/* Match Score */}
+
+                        <div className="absolute top-4 left-4">
+
+                          <div className="bg-gradient-to-r from-emerald-500 to-green-600 text-white px-4 py-2 rounded-full font-bold shadow-xl">
+                            {listing.recommendationScore}% Match
+                          </div>
+
+                        </div>
+
+                        {/* AI Badge */}
+
+                        <div className="absolute top-4 right-4">
+
+                          <div className="bg-black/40 backdrop-blur-xl text-white px-4 py-2 rounded-full font-semibold">
+                            ✨ AI Pick
+                          </div>
+
+                        </div>
+
+                        {/* Property Name */}
+
+                        <div className="absolute bottom-5 left-5 right-5">
+
+                          <h3 className="text-2xl font-bold text-white drop-shadow-xl">
+                            {listing.name}
+                          </h3>
+
+                          <p className="text-white/90 text-sm mt-1">
+                            📍 {listing.address}
+                          </p>
+
+                        </div>
+
+                      </div>
+
+                      {/* Content */}
+
+                      <div className="p-6">
+
+                        <div className="flex flex-wrap gap-2 mb-5">
+
+                          <span className="px-3 py-1 rounded-full bg-indigo-100 text-indigo-700 text-xs font-semibold">
+                            🛏 {listing.bedrooms} Beds
+                          </span>
+
+                          <span className="px-3 py-1 rounded-full bg-purple-100 text-purple-700 text-xs font-semibold">
+                            🛁 {listing.bathrooms} Baths
+                          </span>
+
+                          {listing.furnished && (
+                            <span className="px-3 py-1 rounded-full bg-emerald-100 text-emerald-700 text-xs font-semibold">
+                              Furnished
+                            </span>
+                          )}
+
+                          {listing.parking && (
+                            <span className="px-3 py-1 rounded-full bg-amber-100 text-amber-700 text-xs font-semibold">
+                              Parking
+                            </span>
+                          )}
+
+                        </div>
+
+                        {/* AI Insight */}
+
+                        <div className="rounded-2xl bg-gradient-to-r from-indigo-50 to-purple-50 border border-indigo-100 p-4">
+
+                          <div className="flex items-center gap-2 mb-3">
+
+                            <div className="w-8 h-8 rounded-full bg-indigo-600 text-white flex items-center justify-center text-sm">
+                              ✨
+                            </div>
+
+                            <p className="font-semibold text-indigo-700">
+                              AI Insight
+                            </p>
+
+                          </div>
+
+                          <div className="text-sm text-gray-700 whitespace-pre-line leading-6">
+                            {listing.aiReason}
+                          </div>
+
+                        </div>
+
+                        {/* CTA */}
+
+                        <a
+                          href={`/listing/${listing._id}`}
+                          className="mt-5 block text-center bg-gradient-to-r from-indigo-600 to-purple-600 text-white py-3 rounded-2xl font-semibold hover:scale-[1.02] transition-all duration-300 shadow-lg"
+                        >
+                          Explore Property →
+                        </a>
+
+                      </div>
+
+                    </div>
+
+                  ))}
+
+                </div>
+
+              </section>
+            )}
+
           </div>
         </div>
       )}
+
+      
+
     </main>
   )
 }

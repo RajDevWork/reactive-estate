@@ -18,6 +18,8 @@ export default function Home() {
   const [rentListings, setRentListings] = useState([]);
   const [saleListings, setSaleListings] = useState([]);
 
+  const [ recommendedListings,  setRecommendedListings] = useState([]);
+
   // 🟢 Reusable fetcher function
   const fetchListings = async (query, setter) => {
     try {
@@ -28,12 +30,29 @@ export default function Home() {
       console.error("Fetch Error:", error);
     }
   };
+  //Fetch AI based listing
+  const fetchRecommendations =
+  async () => {
+    const res = await fetch(
+      "/api/listing/recommendations"
+    );
+
+    const data = await res.json();
+
+    setRecommendedListings(data);
+  };
+
 
   useEffect(() => {
     fetchListings("offer=true&limit=4&order=desc", setOfferListings);
     fetchListings("type=rent&limit=4", setRentListings);
     fetchListings("type=sale&limit=4", setSaleListings);
+    fetchRecommendations();
+
   }, []);
+
+
+  // console.log("recommendedListings = ",recommendedListings)
 
   return (
     <div className="pb-10 bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 min-h-screen">
@@ -184,6 +203,17 @@ export default function Home() {
           />
         )}
 
+        {/* AI Recommendation */}
+
+        {recommendedListings?.length > 0 && (
+          <Section
+            title="AI Recommended"
+            link="/search"
+            listings={recommendedListings}
+            icon="✨"
+          />
+        )}
+
         {/* Rent */}
         {rentListings?.length > 0 && (
           <Section
@@ -236,6 +266,7 @@ function Section({ title, link, listings, icon }) {
             <div key={listing._id} className="transform hover:scale-105 hover:-translate-y-2 transition-all duration-300 group/item">
               <div className="bg-white rounded-2xl shadow-md hover:shadow-xl transition-shadow duration-300 overflow-hidden border border-gray-100">
                 <ListingItem listing={listing} />
+
               </div>
             </div>
           ))}

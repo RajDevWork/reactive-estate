@@ -1,5 +1,6 @@
 import Listing from "../models/listing.model.js";
 import { errorHandler } from "../utils/error.js";
+import {generateRecommendationReason} from '../services/gemini.service.js'
 
 export const createListing = async(req,res,next)=>{
 
@@ -128,3 +129,157 @@ export const getListings = async(req,res,next)=>{
     }
 
 }
+
+export const getRecommendations = async (
+  req,
+  res,
+  next
+) => {
+  try {
+    const currentListing = await Listing.findById(
+      req.params.id
+    );
+
+    const listings = await Listing.find({
+      _id: { $ne: currentListing._id },
+    });
+
+    const scoredListings = listings
+      .map((listing) => {
+        let score = 0;
+
+        if (
+          currentListing.type === listing.type
+        )
+          score += 30;
+
+        if (
+          currentListing.furnished ===
+          listing.furnished
+        )
+          score += 15;
+
+        if (
+          currentListing.parking ===
+          listing.parking
+        )
+          score += 15;
+
+        const bedroomDiff = Math.abs(
+          Number(currentListing.bedrooms) -
+            Number(listing.bedrooms)
+        );
+
+        score += Math.max(
+          0,
+          20 - bedroomDiff * 5
+        );
+
+        const priceDiff = Math.abs(
+          currentListing.regularPrice -
+            listing.regularPrice
+        );
+
+        score += Math.max(
+          0,
+          20 -
+            (priceDiff /
+              currentListing.regularPrice) *
+              20
+        );
+
+        return {
+          listing,
+          score,
+        };
+      })
+      .sort((a, b) => b.score - a.score)
+      .slice(0, 4);
+
+    const recommendations = await Promise.all(
+      scoredListings.map(async (item) => {
+        const aiReason =
+          await generateRecommendationReason(
+            currentListing,
+            item.listing
+          );
+
+        return {
+          ...item.listing.toObject(),
+          recommendationScore: Math.round(
+            item.score
+          ),
+          aiReason,
+        };
+      })
+    );
+
+    res.status(200).json(recommendations);
+  } catch (error) {
+    next(error);
+  }
+};
+
+
+export const getHomeRecommendations = async (
+  req,
+  res,
+  next
+) => {
+  try {
+    const listings = await Listing.find();
+
+    const recommendations = listings
+      .map((listing) => {
+        let score = 0;
+
+        // Offer bonus
+        if (listing.offer) score += 30;
+
+        // Furnished bonus
+        if (listing.furnished) score += 20;
+
+        // Parking bonus
+        if (listing.parking) score += 15;
+
+        // Sale listings preferred
+        if (listing.type === "sale")
+          score += 10;
+
+        // Price factor
+        if (listing.regularPrice > 500000)
+          score += 10;
+
+        // Fresh listings
+        const daysOld =
+          (Date.now() -
+            new Date(
+              listing.createdAt
+            ).getTime()) /
+          (1000 * 60 * 60 * 24);
+
+        score += Math.max(
+          0,
+          15 - daysOld
+        );
+
+        return {
+          ...listing.toObject(),
+          recommendationScore:
+            Math.round(score),
+        };
+      })
+      .sort(
+        (a, b) =>
+          b.recommendationScore -
+          a.recommendationScore
+      )
+      .slice(0, 4);
+
+    res.status(200).json(
+      recommendations
+    );
+  } catch (error) {
+    next(error);
+  }
+};

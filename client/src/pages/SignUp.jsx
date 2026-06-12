@@ -158,22 +158,22 @@ export default function SignUp() {
           </form>
 
           {/* Divider */}
-          <div className="relative my-8">
+          {/* <div className="relative my-8">
             <div className="absolute inset-0 flex items-center">
               <div className="w-full border-t border-gray-300"></div>
             </div>
             <div className="relative flex justify-center text-sm">
               <span className="px-4 bg-white text-gray-500">or continue with</span>
             </div>
-          </div>
+          </div> */}
 
           {/* OAuth */}
-          <div className="mb-6">
+          {/* <div className="mb-6">
             <OAuth />
-          </div>
+          </div> */}
 
           {/* Sign in link */}
-          <div className="text-center">
+          <div className="text-center my-6">
             <p className="text-gray-600">
               Already have an account?{' '}
               <Link
